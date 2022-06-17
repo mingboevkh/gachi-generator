@@ -16,21 +16,46 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  CheckCodeStyle:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Check project code style
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          sudo apt update
+          sudo apt install python3-pip-y
+          pip3 install flake8
+          python3 -m flake8 ./ --ignore=F401,E402
+      # Runs a set of commands using the runners shell
+  BuildAppAndPublishIt:
+    runs-on: ubuntu-latest
+    needs: CheckCodeStyle
+    steps:
+     - name: 'Create env file'
+       run: |
+          touch .env
+          echo TOKEN=${{ secrets.GACHI_TOKEN }} >> .env
+          cat .env
+     - name: Login to docker.io
+       run:  echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+     - uses: actions/checkout@master
+     - name: Build image
+       run: docker build -t mingboevkh/gachi-generator:$GITHUB_RUN_ID -f Dockerfile .
+     - name: Push image to docker.io
+       run: docker push mingboevkh/gachi-generator:$GITHUB_RUN_ID
+  DeployingNow:
+    runs-on: ubuntu-latest
+    needs: BuildAppAndPublishIt
+    steps:
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo TOKEN=${{ secrets.GACHI_TOKEN }} >> .env
+          cat .env
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "gachi-generator" 
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
