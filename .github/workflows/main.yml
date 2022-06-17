@@ -16,6 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
+  
   CheckCodeStyle:
     runs-on: ubuntu-latest
     steps:
@@ -28,6 +29,7 @@ jobs:
           pip3 install flake8
           python3 -m flake8 ./ --ignore=F401,E402 --max-line-length 100
       # Runs a set of commands using the runners shell
+  
   BuildAppAndPublishIt:
     runs-on: ubuntu-latest
     needs: CheckCodeStyle
@@ -39,6 +41,7 @@ jobs:
        run: docker build -t mingboevkh/gachi-generator:$GITHUB_RUN_ID -f Dockerfile .
      - name: Push image to docker.io
        run: docker push mingboevkh/gachi-generator:$GITHUB_RUN_ID
+  
   DeployingNow:
     runs-on: ubuntu-latest
     needs: BuildAppAndPublishIt
@@ -49,3 +52,27 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_TOKEN}}
           heroku_app_name: "gachi-generator" 
           heroku_email: ${{secrets.HEROKU_EMAIL}}
+  
+  Notify:
+    if: always()
+    needs: DeployingNow
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Send success notification
+        if: success()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: Successfully deployed!
+      
+      - name: Send failure notification
+        if: failure()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: Last run was failed!
+  
