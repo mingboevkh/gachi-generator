@@ -7,7 +7,8 @@ import links
 import markup as nav
 
 load_dotenv()
-bot = Bot(token=os.getenv('TOKEN'))
+TOKEN = os.environ['TOKEN']
+bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 
