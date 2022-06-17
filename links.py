@@ -11,5 +11,6 @@ gachi = [
     f'{h}i1.sndcdn.com/artworks-ZBaC80WPNo6QSOwT-HJrSzQ-t500x500.jpg',
     f'{h}c.tenor.com/1cXNDRsUeicAAAAC/%D0%B3%D0%B0%D1%87%D0%B8.gif',
     f'{h}disgustingmen.com/wp-content/uploads/2022/01/DbZ7FcYXcAAAxV2.jpg',
-    f'{h}i.postimg.cc/286KjJ2P/image-2.jpg'
+    f'{h}i.postimg.cc/286KjJ2P/image-2.jpg',
+    f'{h}i.postimg.cc/k4PsGDXD/slave.jpg'
 ]
