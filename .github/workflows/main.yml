@@ -58,8 +58,7 @@ jobs:
     needs: DeployingNow
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
+    
       - name: Send success notification
         if: success()
         uses: appleboy/telegram-action@master
