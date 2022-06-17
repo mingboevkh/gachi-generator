@@ -13,13 +13,18 @@ dp = Dispatcher(bot)
 
 @dp.message_handler(commands=['start'])
 async def command_start(message: types.Message):
-    await bot.send_message(message.from_user.id, 'Welcome to the club, {0.first_name}'.format(message.from_user), reply_markup=nav.mainMenu)
+    await bot.send_message(message.from_user.id,
+                           'Welcome to the club, {0.first_name}'
+                           .format(message.from_user),
+                           reply_markup=nav.mainMenu)
 
 
 @dp.message_handler()
 async def bot_message(message: types.Message):
     if message.text == 'Generate Gachi':
-        await message.reply_photo(links.gachi[random.randint(0, len(links.gachi)-1)])
+        await message.reply_photo(links.
+                                  gachi[random.
+                                        randint(0, len(links.gachi) - 1)])
     else:
         await message.reply('Dude only gachi')
 
