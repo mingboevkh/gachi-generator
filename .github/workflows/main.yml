@@ -52,6 +52,8 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_TOKEN}}
           heroku_app_name: "gachi-generator" 
           heroku_email: ${{secrets.HEROKU_EMAIL}}
+          dontuseforce: true
+          dontautocreate: true
   
   Notify:
     if: always()
